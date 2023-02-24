@@ -1,0 +1,42 @@
+# Get the original features for a single row
+original_row = {'season_teams_count': 28, 'team_1_xg90_performance': 1.2384119, 'team_2_xg90_performance': 1.5137178, 
+                'team_1_xga90_performance':1.0820477, 'team_2_xga90_performance':1.3592027, 'team_1_tsr_avg': 0.6, 
+                'team_2_tsr_avg': 0.5, 'team1_all_classic_xgsh': 220, 'team1_all_classic_xgash': 10, 
+                'team1_all_classic_gdxgd': -5, 'team1_all_classic_wins': 3, 'team1_all_classic_draw': 1, 
+                'team1_all_classic_defeat': 10, 'team1_all_xg90_draw_xgxga': 0.5, 'team1_all_xg90_zero_xgxga': 0.1, 
+                'team1_all_xg90_com_xgxga': 0.8, 'team2_all_classic_xgd': 2, 'team2_all_classic_gdxgd': 1, 
+                'team2_all_classic_xp': 10, 'team2_all_classic_minutes': 1800, 'team2_all_xg90_draw_xga90': 0.8, 
+                'team2_all_xg90_draw_xgxga': 0.4, 'team2_all_xg90_cxp_xg90': 0.2, 'team2_all_xg90_cop_xg90': 0.3, 
+                'team2_all_five_draw_xg90': 1, 'team_1_points_difference4': -3, 'team_2_points_difference4': 10, 
+                'team_1_xg90_performance_diff4': 0.2, 'team_2_xg90_performance_diff4': -0.1, 
+                'team_1_xga90_performance_diff4': -0.1, 'team_2_xga90_performance_diff4': 0.1, 
+                'team_1_lucky_l4': 1, 'team_2_lucky_l4': 0, 'position_class_team_1': 'D', 
+                'position_class_team_2': 'D', 'diff_points_class': 'B2'}
+
+# Put the original features in a DataFrame
+row_df = pd.DataFrame(original_row, index=[0])
+
+# Scale the numerical features using the same StandardScaler object
+row_df[num_features] = scaler.transform(row_df[num_features])
+
+# One-hot encode the categorical features using the same OneHotEncoder and ColumnTransformer objects
+row_encoded = preprocessor.transform(row_df)
+
+# Call the predict method of the trained model and pass the preprocessed input as an argument
+predicted_label = model.predict(row_encoded)
+
+# Get the index of the class with the highest probability
+predicted_labels_encoded = np.argmax(predicted_label, axis=1)
+predicted_labels = label_encoder.inverse_transform(predicted_labels_encoded) 
+
+# Handle unknown labels
+predicted_labels[pd.isnull(predicted_labels)] = 'unknown'
+predicted_labels = predicted_labels.astype(str)
+
+# Replace 'unknown' with a specified value
+# Replace 'X' with a specified value
+predicted_labels[predicted_labels == 'X'] = '0'
+
+# Convert the labels to integers
+predicted_labels = predicted_labels.astype(int)
+print(predicted_labels)
